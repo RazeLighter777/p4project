@@ -192,15 +192,12 @@ control MyEgress(inout headers hdr,
     /* VLAN Table Logic - Begins ****************************************/
     /**********************************************************************/
     
-    // COMPLETED FOR YOU Create a table that matches on the egress port and VLAN ID and
+    // COMPLETED FOR YOU: a table that matches on the egress port and VLAN ID and
     // lets the matching packets pass (using the `noop` action); else drops 
     // them by default.
-    //
-    // NOTE: please follow p4-src/bridge.p4 for a reference example on how 
-    // to create a table.
+ 
     
 
-    /**** ADD YOUR CODE HERE ... ****/
     table vlan_table {
         key = {
             standard_metadata.egress_port: exact;
