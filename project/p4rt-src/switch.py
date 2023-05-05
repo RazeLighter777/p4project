@@ -114,6 +114,12 @@ def ProcPacketIn(switch_name, logs_dir, num_logs_threshold):
 
 
                         #### ADD YOUR CODE HERE ... ####
+                        if eth_type == ETH_TYPE_VLAN:
+                            #install a flow entry to forward packets based onegress port
+                        else:
+                            #Install a flow entry to forward packets based on egress port
+                            table_entry = p4.sh.TableEntry('MyIngress.switch_table')
+                            table_entry.match
                         pass
 
 
