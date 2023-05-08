@@ -166,11 +166,11 @@ control MyIngress(inout headers hdr,
 
         /**** ADD YOUR CODE HERE ... ****/
 
+        
         if (meta.etherType == ETH_TYPE_ARP)
             flood();
         else
             switch_table.apply();
-
         
         /**********************************************************************/
         /* Ingress Apply Logic - Ends *****************************************/
@@ -255,8 +255,11 @@ control MyEgress(inout headers hdr,
 
 
         /**** ADD YOUR CODE HERE ... ****/
-        //1
-        //2
+        //1 checks if MCAST_ID is set
+        if (standard_metadata.mcast_grp == MCAST_ID && standard_metadata.egress_port == standard_metadata.ingress_port)
+            drop();
+        //2 sends ARP packets to controller
+
         if (meta.etherType == ETH_TYPE_ARP)
             to_controller();
 
