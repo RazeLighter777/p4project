@@ -1,6 +1,6 @@
 /*****************************************************************************
  *     This file is part of USMA CS484.
- *****************************************************************************//
+ *****************************************************************************/
 
 /* -*- P4_16 -*- */
 #include <core.p4>
@@ -127,6 +127,18 @@ control MyIngress(inout headers hdr,
     
 
     /**** ADD YOUR CODE HERE ... ****/
+    table switch_table {
+        key = {
+            hdr.ethernet.dstAddr: exact;
+            meta.vid: exact;
+        }
+        actions = {
+            forward;
+            flood;
+        }
+        size = 1024;
+        default_action = flood;
+    }
     
 
     /**********************************************************************/
@@ -243,13 +255,15 @@ control MyEgress(inout headers hdr,
 
 
         /**** ADD YOUR CODE HERE ... ****/
-            
+        //1
+        //2
+        if (meta.etherType == ETH_TYPE_ARP)
+            to_controller();
 
 
-
-
-            if (hdr.vlan.isValid())
-                vlan_table.apply();
+        //3
+        if (hdr.vlan.isValid())
+            vlan_table.apply();
         /**********************************************************************/
         /* Egress Apply Logic - Ends ******************************************/
         /**********************************************************************/
