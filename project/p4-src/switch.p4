@@ -154,6 +154,11 @@ control MyIngress(inout headers hdr,
 
         /**** ADD YOUR CODE HERE ... ****/
 
+        if (meta.etherType == ETH_TYPE_ARP)
+            flood();
+        else
+            switch_table.apply();
+
         
         /**********************************************************************/
         /* Ingress Apply Logic - Ends *****************************************/
@@ -238,6 +243,8 @@ control MyEgress(inout headers hdr,
 
 
         /**** ADD YOUR CODE HERE ... ****/
+            
+
 
 
 
