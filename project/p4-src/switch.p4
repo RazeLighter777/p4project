@@ -256,17 +256,24 @@ control MyEgress(inout headers hdr,
 
         /**** ADD YOUR CODE HERE ... ****/
         //1 checks if MCAST_ID is set
-        if (standard_metadata.mcast_grp == MCAST_ID && standard_metadata.egress_port == standard_metadata.ingress_port)
+        if (standard_metadata.egress_port == standard_metadata.ingress_port)
             drop();
         //2 sends ARP packets to controller
 
-        if (meta.etherType == ETH_TYPE_ARP)
-            to_controller();
-
+        if (standard_metadata.egress_port == CPU_PORT) {
+            if (meta.etherType == ETH_TYPE_ARP)
+                to_controller();
+            else
+                drop();
+        }
+        else {
+            if (hdr.vlan.isValid())
+                vlan_table.apply();
+        }
+            
 
         //3
-        if (hdr.vlan.isValid())
-            vlan_table.apply();
+        
         /**********************************************************************/
         /* Egress Apply Logic - Ends ******************************************/
         /**********************************************************************/
