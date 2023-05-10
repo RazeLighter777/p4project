@@ -79,7 +79,6 @@ def ProcPacketIn(switch_name, logs_dir, num_logs_threshold):
                 src_mac = mac2str(src_mac_in_bytes)
                 eth_type_in_bytes = payload[12:14]
                 eth_type = int.from_bytes(eth_type_in_bytes, "big")
-
                 if eth_type == ETH_TYPE_VLAN:
                     # Parse VLAN header
                     vlan_id_in_bytes = payload[14:16]
@@ -114,9 +113,10 @@ def ProcPacketIn(switch_name, logs_dir, num_logs_threshold):
 
 
                         #### ADD YOUR CODE HERE ... ####
-                        table_entry = p4sh.TableEntry('MyIngress.switch_table')(action='MyIngress.drop')
+                        table_entry = p4sh.TableEntry('MyIngress.switch_table')(action='MyIngress.forward')
                         table_entry.match['hdr.ethernet.dstAddr'] = src_mac
-                        table_entry.match['standardmetadata.ingress_port'] = str(ingress_port)
+                        table_entry.action['port'] = str(ingress_port)
+                        table_entry.match['meta.vid'] = str(vlan_id)
                         table_entry.insert()
 
 
@@ -202,7 +202,15 @@ if __name__ == '__main__':
         #
         # NOTE: please follow p4rt-src/bridge.py for a reference example on how to install
         # table entries.
+        
+        #query the vlan_id_to_ports_map
 
+        for vlan_id, ports in vlan_id_to_ports_map.items():
+            for port in ports:
+                table_entry = p4sh.TableEntry('MyEgress.vlan_table')(action='MyEgress.noop')
+                table_entry.match['meta.vid'] = str(vlan_id)
+                table_entry.match['standard_metadata.egress_port'] = str(port)
+                table_entry.insert()
 
         #### ADD YOUR CODE HERE ... ####
         #install vlan rules
@@ -250,9 +258,13 @@ if __name__ == '__main__':
 
 
         #### ADD YOUR CODE HERE ... ####
-        pass
-
-
+        #delete vlan rules
+        for vlan_id, ports in vlan_id_to_ports_map.items():
+            for port in ports:
+                table_entry = p4sh.TableEntry('MyEgress.vlan_table')(action='MyEgress.noop')
+                table_entry.match['meta.vid'] = str(vlan_id)
+                table_entry.match['standard_metadata.egress_port'] = str(port)
+                table_entry.delete()
         ##################################################################################
         # Delete VLAN Rules - Ends #######################################################
         ##################################################################################
